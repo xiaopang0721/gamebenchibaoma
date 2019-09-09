@@ -25,11 +25,7 @@ module gamebenchibaoma.page {
 		static myinit(str: string) {
 			super.myinit(str);
 			BenchibaomaClip.init();
-			if (WebConfig.baseplatform == PageDef.BASE_PLATFORM_TYPE_NQP) {
-				PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM] = BcbmPage;
-			} else {
-				PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM] = BcbmPageOld;
-			}
+			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM] = BcbmPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_MAP] = BcbmMapPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_BEGIN] = BcbmBeginPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_TONGSHA] = BcbmTongShaPage;
@@ -58,7 +54,7 @@ module gamebenchibaoma.page {
 				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.sk",
 				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.png",
 				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.sk",
-				
+
 				Path.custom_atlas_scene + 'chip.atlas',
 				Path.map + 'pz_benchibaoma.png',
 				Path.map_far + 'bg_benchibaoma.jpg'
