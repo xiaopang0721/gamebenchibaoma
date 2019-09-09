@@ -50,6 +50,15 @@ module gamebenchibaoma.page {
 				PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "general/effect/suiji.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "general/effect/kaipai.atlas",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_0.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_0.sk",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_1.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_1.sk",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.sk",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.sk",
+				
 				Path.custom_atlas_scene + 'chip.atlas',
 				Path.map + 'pz_benchibaoma.png',
 				Path.map_far + 'bg_benchibaoma.jpg'
