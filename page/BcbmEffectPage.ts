@@ -18,7 +18,7 @@ module gamebenchibaoma.page {
         private _carPage: BcbmCarPage;
         private _bcbmStory: BenchibaomaStory;
 
-        constructor(game: Game, box: Box, view: ui.game_ui.benchibaoma.BenChiBaoMaUI) {
+        constructor(game: Game, box: Box, view: ui.nqp.game_ui.benchibaoma.BenChiBaoMaUI) {
             this._game = game;
             this._box = box;
             this._grids = [];

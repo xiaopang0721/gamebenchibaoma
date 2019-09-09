@@ -127,11 +127,11 @@ module gamebenchibaoma.page {
 
         private _game: Game;
         private _boxCar: Box;
-        private _uiDeng: ui.game_ui.benchibaoma.component.GuangUI;
+        private _uiDeng: ui.nqp.game_ui.benchibaoma.component.GuangUI;
         private _points: Vector2[][];
         private _angles: number[][];
         private _totalNum: number = 0;
-        constructor(game: Game, view: ui.game_ui.benchibaoma.BenChiBaoMaUI) {
+        constructor(game: Game, view: ui.nqp.game_ui.benchibaoma.BenChiBaoMaUI) {
             super();
             this._game = game;
             BcbmCarPage.initBcbmPoint();

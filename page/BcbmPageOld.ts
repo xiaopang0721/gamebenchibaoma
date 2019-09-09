@@ -3,7 +3,7 @@
 */
 module gamebenchibaoma.page {
 	export class BcbmPageOld extends game.gui.base.Page {
-		private _viewUI: ui.game_ui.benchibaoma.BenChiBaoMa_HUDUI;
+		private _viewUI: ui.nqp.game_ui.benchibaoma.BenChiBaoMa_HUDUI;
 		private _player: any;
 		private _leastTmep: any = [5000, 8000, 25000, 50000];
 		private _needMoney: any = [0, 0, 0, 0];
