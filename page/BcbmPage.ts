@@ -8,6 +8,7 @@ module gamebenchibaoma.page {
 		private _xianhongTmep: any = [5000, 8000, 25000, 50000];
 		private _needMoney: any = [0, 0, 0, 0];
 		private _xianhongClipList: ClipUtil[] = [];
+		private _clipArr: any[] = [ClipUtil.HUD_FONT0, ClipUtil.HUD_FONT1, ClipUtil.HUD_FONT2, ClipUtil.HUD_FONT3];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -33,7 +34,7 @@ module gamebenchibaoma.page {
 			}
 			for (let index = 0; index < 4; index++) {
 				if (!this._xianhongClipList[index]) {
-					this._xianhongClipList[index] = new ClipUtil(ClipUtil.HUD_FONT);
+					this._xianhongClipList[index] = new ClipUtil(this._clipArr[index]);
 					this._xianhongClipList[index].x = this._viewUI["clip_xianhong" + index].x;
 					this._xianhongClipList[index].y = this._viewUI["clip_xianhong" + index].y;
 					this._viewUI["clip_xianhong" + index].parent && this._viewUI["clip_xianhong" + index].parent.addChild(this._xianhongClipList[index]);
