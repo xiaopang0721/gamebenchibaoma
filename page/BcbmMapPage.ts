@@ -422,7 +422,7 @@ module gamebenchibaoma.page {
                 TongyongPageDef.ins.alertRecharge("老板，您的金币不足哦~\n补充点金币去大杀四方吧~", () => {
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_CHONGZHI);
                 }, () => {
-                }, false, PathGameTongyong.ui_tongyong_general + "btn_cz.png");
+                }, false, TongyongPageDef.TIPS_SKIN_STR['cz']);
                 return;
             }
             if (this._curChip > money) {
@@ -1069,7 +1069,7 @@ module gamebenchibaoma.page {
             if (WebConfig.baseplatform == PageDef.BASE_PLATFORM_TYPE_NQP) return false;
             if (this._game.sceneObjectMgr.mainPlayer.IsIsGuest()) {
                 TongyongPageDef.ins.alertRecharge("亲爱的玩家，您正使用游客模式进行游戏，该模式下的游戏数据（包括付费数据）在删除游戏、更换设备后清空！对此造成的损失，本平台将不承担任何责任。为保障您的虚拟财产安全，我们强力建议您绑定手机号升级为正式账号。",
-                    () => { }, () => { }, true, PathGameTongyong.ui_tongyong_general + "btn_qd.png");
+                    () => { }, () => { }, true, TongyongPageDef.TIPS_SKIN_STR['qd']);
                 return true;
             }
             return false;
