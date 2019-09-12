@@ -21,7 +21,6 @@ module gamebenchibaoma.page {
 			this._viewUI = this.createView('game_ui.benchibaoma.BenChiBaoMa_GuiZeUI');
 			this.addChild(this._viewUI);
 
-
 			this._viewUI.panel_rule.vScrollBarSkin = "";
 			this._viewUI.panel_rule.vScrollBar.autoHide = true;
 			this._viewUI.panel_rule.vScrollBar.elasticDistance = 100;
@@ -30,7 +29,8 @@ module gamebenchibaoma.page {
 		// 页面打开时执行函数
 		protected onOpen(): void {
 			super.onOpen();
-
+			
+			this._viewUI.tab_btn.selectedIndex = 0;
 		}
 
 		public close(): void {
