@@ -438,12 +438,19 @@ module gamebenchibaoma.page {
             this._game.network.call_benchibaoma_bet(this._curChip, index + 1)
         }
 
+        private _curDiffTime: number;
         //帧心跳
         update(diff: number) {
             if (!this._viewUI) return;
             super.update(diff);
             if (this._effPage) {
                 this._effPage.Update(diff);
+            }
+            if (!this._curDiffTime || this._curDiffTime < 0) {
+                this._viewUI.btn_chong.ani1.play(0, false);
+                this._curDiffTime = TongyongPageDef.CZ_PLAY_DIFF_TIME;
+            } else {
+                this._curDiffTime -= diff;
             }
 
             if (this._lotteryKuangIndex > 0) {
