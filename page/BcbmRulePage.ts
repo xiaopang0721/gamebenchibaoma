@@ -20,10 +20,6 @@ module gamebenchibaoma.page {
 		protected init(): void {
 			this._viewUI = this.createView('game_ui.benchibaoma.BenChiBaoMa_GuiZeUI');
 			this.addChild(this._viewUI);
-
-			this._viewUI.panel_rule.vScrollBarSkin = "";
-			this._viewUI.panel_rule.vScrollBar.autoHide = true;
-			this._viewUI.panel_rule.vScrollBar.elasticDistance = 100;
 		}
 
 		// 页面打开时执行函数
