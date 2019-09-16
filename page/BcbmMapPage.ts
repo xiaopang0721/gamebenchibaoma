@@ -206,7 +206,8 @@ module gamebenchibaoma.page {
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_benchibaoma.music_benchibaoma + "BGM_1.mp3");
             this._viewUI.btn_repeat.disabled = true;
-            this._viewUI.btn_spread.left = this._game.isFullScreen ? 25 : 10;
+            this._viewUI.btn_spread.left = this._game.isFullScreen ? 30 : 10;
+            this._viewUI.box_menu.left = this._game.isFullScreen ? 25 : 10;
         }
 
         // 页面打开时执行函数
