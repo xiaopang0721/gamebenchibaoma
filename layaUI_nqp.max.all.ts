@@ -157,9 +157,10 @@ module ui.nqp.game_ui.benchibaoma {
 module ui.nqp.game_ui.benchibaoma {
     export class BenChiBaoMa_GuiZeUI extends View {
 		public btn_close:Laya.Button;
+		public panel_rule:Laya.Panel;
 		public tab_btn:Laya.Tab;
 
-        public static  uiView:any ={"type":"View","props":{"width":1280,"height":720},"child":[{"type":"Box","props":{"width":826,"height":531,"centerY":0,"centerX":0,"anchorY":0.5,"anchorX":0.5},"child":[{"type":"Image","props":{"y":-42,"x":-39,"skin":"tongyong_ui/game_ui/tongyong/dating/tu_bk2.png"}},{"type":"Image","props":{"y":18,"x":415,"skin":"tongyong_ui/game_ui/tongyong/hud/tit_game_rule.png","anchorY":0.5,"anchorX":0.5}},{"type":"Button","props":{"y":16,"x":818,"var":"btn_close","stateNum":1,"skin":"tongyong_ui/game_ui/tongyong/hud/btn_tuichu.png","anchorY":0.5,"anchorX":0.5}},{"type":"Image","props":{"y":73,"x":220,"skin":"benchibaoma_ui/game_ui/benchibaoma/guize_1.png"}},{"type":"Tab","props":{"y":64,"x":5,"var":"tab_btn"},"child":[{"type":"Button","props":{"stateNum":2,"skin":"tongyong_ui/game_ui/tongyong/dating/btn_wjjs.png","name":"item0"}}]}]}]};
+        public static  uiView:any ={"type":"View","props":{"width":1280,"height":720},"child":[{"type":"Box","props":{"width":826,"height":517,"centerY":0,"centerX":0},"child":[{"type":"Image","props":{"y":-42,"x":-39,"skin":"tongyong_ui/game_ui/tongyong/dating/tu_bk2.png"}},{"type":"Image","props":{"y":12,"x":418,"skin":"tongyong_ui/game_ui/tongyong/hud/tit_game_rule.png","anchorY":0.5,"anchorX":0.5}},{"type":"Button","props":{"y":0,"x":819,"var":"btn_close","stateNum":1,"skin":"tongyong_ui/game_ui/tongyong/hud/btn_tuichu.png","anchorY":0.5,"anchorX":0.5}},{"type":"Panel","props":{"y":65,"x":217,"width":585,"var":"panel_rule","height":434},"child":[{"type":"Image","props":{"y":-11,"x":-29,"skin":"benchibaoma_ui/game_ui/benchibaoma/guize_1.png"}}]},{"type":"Tab","props":{"y":64,"x":5,"var":"tab_btn"},"child":[{"type":"Button","props":{"stateNum":2,"skin":"tongyong_ui/game_ui/tongyong/dating/btn_wjjs.png","name":"item0"}}]}]}]};
         constructor(){ super()}
         createChildren():void {
         
