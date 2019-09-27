@@ -19,6 +19,10 @@ module gamebenchibaoma.page {
 				PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_0.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_1.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.png",
+				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.png",
 			];
 			this._isNeedDuang = false;
 		}
