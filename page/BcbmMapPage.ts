@@ -127,7 +127,7 @@ module gamebenchibaoma.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
+                DatingPath.atlas_dating_ui + "qifu.atlas",
                 Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "general/effect/suiji.atlas",
             ];
@@ -244,7 +244,7 @@ module gamebenchibaoma.page {
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_MAPINFO_CHANGE, this, this.onUpdateMapInfo);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_QIFU_TIME_CHANGE, this, this.onUpdateUnit);
 
-            this._game.network.addHanlder(Protocols.SMSG_OPERATION_FAILED, this, this.onOptHandler);
+            this._game.qifuMgr.on(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
             this._viewUI.btn_spread.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_back.on(LEvent.CLICK, this, this.onBtnClickWithTween);
@@ -307,7 +307,7 @@ module gamebenchibaoma.page {
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_SETTING)
                     break;
                 case this._viewUI.btn_qifu:
-                    this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_QIFU)
+                    this._game.uiRoot.general.open(DatingPageDef.PAGE_QIFU)
                     break;
                 case this._viewUI.btn_zhanji:
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_RECORD, (page) => {
@@ -508,15 +508,13 @@ module gamebenchibaoma.page {
             //主玩家的座位
             let mainUnit = this._game.sceneObjectMgr.mainUnit;
             if (mainUnit) {
-                let headImg = mainUnit.GetHeadImg();
                 this._viewUI.main_player.txt_name.text = getMainPlayerName(mainUnit.GetName());
                 let money = EnumToString.getPointBackNum(mainUnit.GetMoney(), 2);
                 money >= 0 && (this._viewUI.main_player.txt_money.text = money.toString());
                 let mainIdx = mainUnit.GetIndex();
-                this._viewUI.main_player.img_txk.visible = mainUnit.GetVipLevel() > 0;
-                if (this._viewUI.main_player.img_txk.visible) {
-                    this._viewUI.main_player.img_txk.skin = PathGameTongyong.ui_tongyong_touxiang + "tu_v" + mainUnit.GetVipLevel() + ".png";
-                }
+                this._viewUI.main_player.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(mainUnit.GetHeadKuangImg());
+                this._viewUI.main_player.img_vip.visible = mainUnit.GetVipLevel() > 0;
+                this._viewUI.main_player.img_vip.skin = TongyongUtil.getVipUrl(mainUnit.GetVipLevel());
                 //祈福成功 头像上就有动画
                 if (qifu_index && mainIdx == qifu_index) {
                     this._viewUI.main_player.qifu_type.visible = true;
@@ -524,27 +522,19 @@ module gamebenchibaoma.page {
                     this.playTween(this._viewUI.main_player.qifu_type, qifu_index);
                 }
                 //时间戳变化 才加上祈福标志
-                if (mainUnit.GetQFEndTime(mainUnit.GetQiFuType() - 1) > this._game.sync.serverTimeBys) {
+                if (TongyongUtil.getIsHaveQiFu(mainUnit, this._game.sync.serverTimeBys)) {
                     if (qifu_index && mainIdx == qifu_index) {
                         Laya.timer.once(2500, this, () => {
                             this._viewUI.main_player.img_qifu.visible = true;
-                            if (mainUnit.GetQiFuType()) {
-                                let qifuImgUrl = this._nameStrInfo[mainUnit.GetQiFuType() - 1];
-                                this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
-                            }
+                            this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                         })
                     } else {
                         this._viewUI.main_player.img_qifu.visible = true;
-                        if (mainUnit.GetQiFuType()) {
-                            let qifuImgUrl = this._nameStrInfo[mainUnit.GetQiFuType() - 1];
-                            this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
-                        }
+                        this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                     }
                 } else {
                     this._viewUI.main_player.img_qifu.visible = false;
-                    if (headImg) {
-                        this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + headImg + ".png";
-                    }
+                    this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                 }
             }
             let onlineNum = 0;
@@ -612,23 +602,16 @@ module gamebenchibaoma.page {
             this._firstList1[index] = 1;
         }
 
-        private _nameStrInfo: string[] = ["xs", "px", "gsy", "gg", "cs", "tdg"];
         private _qifuTypeImgUrl: string;
-        protected onOptHandler(optcode: number, msg: any) {
-            if (msg.type == Operation_Fields.OPRATE_GAME) {
-                switch (msg.reason) {
-                    case Operation_Fields.OPRATE_GAME_QIFU_SUCCESS_RESULT:
-                        let dataInfo = JSON.parse(msg.data);
-                        //打开祈福动画界面
-                        this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_QIFU_ANI, (page) => {
-                            page.dataSource = StringU.substitute(PathGameTongyong.ui_tongyong_qifu + "f_{0}1.png", this._nameStrInfo[dataInfo.qf_id - 1]);
-                        });
-                        //相对应的玩家精灵做出反应
-                        this._qifuTypeImgUrl = StringU.substitute(PathGameTongyong.ui_tongyong_qifu + "f_{0}2.png", this._nameStrInfo[dataInfo.qf_id - 1]);
-                        this.onUpdateUnit(dataInfo.qifu_index);
-                        break;
-                }
-            }
+        private qifuFly(dataSource: any): void {
+            if (!dataSource) return;
+            let dataInfo = dataSource;
+            if (!this._game.sceneObjectMgr || !this._game.sceneObjectMgr.mainUnit || this._game.sceneObjectMgr.mainUnit.GetIndex() != dataSource.qifu_index) return;
+            this._game.qifuMgr.showFlayAni(this._viewUI.main_player, this._viewUI, dataSource, (dataInfo) => {
+                //相对应的玩家精灵做出反应
+                this._qifuTypeImgUrl = TongyongUtil.getQFTypeImg(dataInfo.qf_id);
+                this.onUpdateUnit(dataInfo.qifu_index);
+            });
         }
 
         //更新地图信息
@@ -673,54 +656,47 @@ module gamebenchibaoma.page {
                 return;
             }
             for (let i = 0; i < this._seatList.length; i++) {
+                let seat = this._seatList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI;
                 let unitIndex = this._unitSeated[i][0];
                 let unit = this._game.sceneObjectMgr.getUnitByIdx(unitIndex);
                 if (unit) {
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_name.text = getMainPlayerName(unit.GetName());
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_name.fontSize = 15;
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
-                    let unitHeadImg = unit.GetHeadImg();
-                    if (unitHeadImg) {
-                        (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + unitHeadImg + ".png";
-                    }
-                    this._seatList[i].img_txk.visible = unit.GetVipLevel() > 0;
-                    if (this._seatList[i].img_txk.visible) {
-                        this._seatList[i].img_txk.skin = PathGameTongyong.ui_tongyong_touxiang + "tu_v" + unit.GetVipLevel() + ".png";
-                    }
+                    seat.img_txk.visible = true;
+                    seat.txt_name.text = getMainPlayerName(unit.GetName());
+                    seat.txt_name.fontSize = 15;
+                    seat.txt_money.text = EnumToString.getPointBackNum(unit.GetMoney(), 2).toString();
+                    seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
+                    seat.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(unit.GetHeadKuangImg());
+                    seat.img_vip.visible = unit.GetVipLevel() > 0;
+                    seat.img_vip.skin = TongyongUtil.getVipUrl(unit.GetVipLevel());
                     //祈福成功 头像上就有动画
                     if (qifu_index && unitIndex == qifu_index) {
-                        this._seatList[i].qifu_type.visible = true;
-                        this._seatList[i].qifu_type.skin = this._qifuTypeImgUrl;
-                        this.playTween1(this._seatList[i].qifu_type, qifu_index);
+                        seat.qifu_type.visible = true;
+                        seat.qifu_type.skin = this._qifuTypeImgUrl;
+                        this.playTween1(seat.qifu_type, qifu_index);
                     }
                     //时间戳变化 才加上祈福标志
-                    if (unit.GetQFEndTime(unit.GetQiFuType() - 1) > this._game.sync.serverTimeBys) {
+                    if (TongyongUtil.getIsHaveQiFu(unit, this._game.sync.serverTimeBys)) {
                         if (qifu_index && unitIndex == qifu_index) {
                             Laya.timer.once(2500, this, () => {
-                                this._seatList[i].img_qifu.visible = true;
-                                if (unit.GetQiFuType()) {
-                                    let qifuImgUrl = this._nameStrInfo[unit.GetQiFuType() - 1];
-                                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
-                                }
+                                seat.img_qifu.visible = true;
+                                seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                             })
                         } else {
-                            this._seatList[i].img_qifu.visible = true;
-                            if (unit.GetQiFuType()) {
-                                let qifuImgUrl = this._nameStrInfo[unit.GetQiFuType() - 1];
-                                (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + qifuImgUrl + ".png";
-                            }
+                            seat.img_qifu.visible = true;
+                            seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                         }
                     } else {
-                        this._seatList[i].img_qifu.visible = false;
+                        seat.img_qifu.visible = false;
                     }
                 } else {
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_name.text = "";
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_name.fontSize = 20;
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).txt_money.text = "点击入座";
-                    (this._seatList[i] as ui.nqp.game_ui.benchibaoma.component.TouXiangWzUI).img_icon.skin = PathGameTongyong.ui_tongyong_general + "tu_weizi.png";
-                    this._seatList[i].img_qifu.visible = false;
-                    this._seatList[i].qifu_type.visible = false;
-                    this._seatList[i].img_txk.visible = false;
+                    seat.txt_name.text = "";
+                    seat.txt_name.fontSize = 20;
+                    seat.txt_money.text = "点击入座";
+                    seat.img_icon.skin = PathGameTongyong.ui_tongyong_general + "tu_weizi.png";
+                    seat.img_qifu.visible = false;
+                    seat.qifu_type.visible = false;
+                    seat.img_txk.visible = false;
+                    seat.img_vip.visible = false;
                 }
             }
         }
@@ -756,17 +732,12 @@ module gamebenchibaoma.page {
             if (!mainPlayer) return;
             let mainPlayerInfo = mainPlayer.playerInfo;
             this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);
-            this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + mainPlayerInfo.headimg + ".png";
-            // let money = parseFloat(mainPlayerInfo.money.toFixed(2));
             this._viewUI.main_player.txt_money.text = EnumToString.getPointBackNum(mainPlayerInfo.money, 2).toString();
-            this._viewUI.main_player.img_qifu.visible = mainPlayer.GetQiFuEndTime(mainPlayerInfo.qifu_type - 1) > this._game.sync.serverTimeBys;
-            if (this._viewUI.main_player.img_qifu.visible) {
-                this._viewUI.main_player.img_icon.skin = PathGameTongyong.ui_tongyong_touxiang + "head_" + this._nameStrInfo[mainPlayerInfo.qifu_type - 1] + ".png";
-            }
-            this._viewUI.main_player.img_txk.visible = mainPlayerInfo.vip_level > 0;
-            if (this._viewUI.main_player.img_txk.visible) {
-                this._viewUI.main_player.img_txk.skin = PathGameTongyong.ui_tongyong_touxiang + "tu_v" + mainPlayerInfo.vip_level + ".png";
-            }
+            this._viewUI.main_player.img_qifu.visible = TongyongUtil.getIsHaveQiFu(mainPlayer, this._game.sync.serverTimeBys);            
+            this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainPlayer.GetHeadImg(), 2);            
+            this._viewUI.main_player.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(mainPlayer.GetHeadKuangImg());
+            this._viewUI.main_player.img_vip.visible = mainPlayer.playerInfo.vip_level > 0;
+            this._viewUI.main_player.img_vip.skin = TongyongUtil.getVipUrl(mainPlayer.playerInfo.vip_level);
         }
 
         private updateMoney(): void {
@@ -1256,7 +1227,7 @@ module gamebenchibaoma.page {
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_STATUS_CHECK, this, this.initRoomConfig);//地图传送参数
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_GAME_RECORD, this, this.onUpdateRecord);//游戏记录更新
-                this._game.network.removeHanlder(Protocols.SMSG_OPERATION_FAILED, this, this.onOptHandler);
+                this._game.qifuMgr.off(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
                 this.resetUI();
                 if (this._seatList) {
