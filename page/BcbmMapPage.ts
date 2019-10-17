@@ -253,8 +253,8 @@ module gamebenchibaoma.page {
             this._viewUI.btn_zhanji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_chong.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_repeat.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_qifu.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onClickHandle);
 
 
             for (let i: number = 0; i < this._seatList.length; i++) {
@@ -294,6 +294,12 @@ module gamebenchibaoma.page {
             }
         }
 
+        //点击事件
+        protected onClickHandle(e: LEvent): void {
+            //玩家列表
+            this._game.uiRoot.general.open(BenchibaomaPageDef.PAGE_BCBM_PLAYER_LIST);
+        }
+
         //按钮缓动回调
         protected onBtnTweenEnd(e: any, target: any): void {
             switch (target) {
@@ -326,10 +332,6 @@ module gamebenchibaoma.page {
                     }
 
                     TongyongPageDef.ins.alertClose("benchibaoma", this, this.onClickCancle);
-
-                    break;
-                case this._viewUI.btn_playerList://玩家列表
-                    this._game.uiRoot.general.open(BenchibaomaPageDef.PAGE_BCBM_PLAYER_LIST);
                     break;
                 case this._viewUI.btn_repeat:
                     if (this.showIsGuest()) return;
@@ -1209,8 +1211,8 @@ module gamebenchibaoma.page {
                 this._viewUI.btn_zhanji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_chong.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_repeat.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_qifu.off(LEvent.CLICK, this, this.onBtnClickWithTween);
+                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onClickHandle);
 
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_ADD_UNIT, this, this.onUnitAdd);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_REMOVE_UNIT, this, this.onUnitRemove);
