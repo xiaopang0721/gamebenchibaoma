@@ -251,7 +251,7 @@ module gamebenchibaoma.page {
             this._viewUI.btn_rule.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_set.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_zhanji.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-            this._viewUI.btn_chong.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+            this._viewUI.btn_chongzhi.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_repeat.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_qifu.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onClickHandle);
@@ -337,7 +337,7 @@ module gamebenchibaoma.page {
                     if (this.showIsGuest()) return;
                     this.repeatBet();
                     break;
-                case this._viewUI.btn_chong:
+                case this._viewUI.btn_chongzhi:
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_CHONGZHI);
                     break;
                 default:
@@ -451,7 +451,7 @@ module gamebenchibaoma.page {
                 this._effPage.Update(diff);
             }
             if (!this._curDiffTime || this._curDiffTime < 0) {
-                this._viewUI.btn_chong.ani1.play(0, false);
+                this._viewUI.btn_chongzhi.ani1.play(0, false);
                 this._curDiffTime = TongyongPageDef.CZ_PLAY_DIFF_TIME;
             } else {
                 this._curDiffTime -= diff;
@@ -1211,7 +1211,7 @@ module gamebenchibaoma.page {
                 this._viewUI.btn_rule.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_set.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_zhanji.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-                this._viewUI.btn_chong.off(LEvent.CLICK, this, this.onBtnClickWithTween);
+                this._viewUI.btn_chongzhi.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_repeat.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_qifu.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onClickHandle);
