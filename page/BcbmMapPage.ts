@@ -655,7 +655,7 @@ module gamebenchibaoma.page {
                 return;
             }
             for (let i = 0; i < this._seatList.length; i++) {
-                let seat = this._seatList[i] as ui.nqp.game_ui.tongyong.TouXiangWzUI;
+                let seat = this._seatList[i];
                 let unitIndex = this._unitSeated[i][0];
                 let unit = this._game.sceneObjectMgr.getUnitByIdx(unitIndex);
                 if (unit) {
