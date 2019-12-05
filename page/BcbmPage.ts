@@ -83,11 +83,11 @@ module gamebenchibaoma.page {
 				case this._viewUI.img_room3:
 					this.EnterRoom(3);
 					break;
-				case this._viewUI.btn_join:
-					let maplv = TongyongUtil.getJoinMapLv(BenchibaomaPageDef.GAME_NAME, this._player.playerInfo.money);
-					if (!maplv) return;
-					this._game.sceneObjectMgr.intoStory(BenchibaomaPageDef.GAME_NAME, maplv.toString(), true);
-					break;
+				// case this._viewUI.btn_join:
+				// 	let maplv = TongyongUtil.getJoinMapLv(BenchibaomaPageDef.GAME_NAME, this._player.playerInfo.money);
+				// 	if (!maplv) return;
+				// 	this._game.sceneObjectMgr.intoStory(BenchibaomaPageDef.GAME_NAME, maplv.toString(), true);
+				// 	break;
 				default:
 					break;
 			}
