@@ -27,6 +27,7 @@ module gamebenchibaoma.page {
                 let params: number[] = BCBM_CURVES_PARAM[i];
                 let ppp: any[] = Laya.Bezier.I.getBezierPoints(curves, params[0]);
                 if (params[0] != 9) {
+                    //去掉中间跟尾部
                     let relen: number = Math.floor(curves.length / 4);
                     for (let j: number = relen; j > 0; j--) {
                         ppp.splice((params[0] + 1) * j * 2 - 2, 2);
@@ -92,7 +93,7 @@ module gamebenchibaoma.page {
         }
 
         //绘制点
-        private static readonly BCBM_IS_DRAW: boolean = false;
+        private static readonly BCBM_IS_DRAW: boolean = true;
         private static DrawPoint(gra: Graphics): void {
             if (!gra) return;
 
