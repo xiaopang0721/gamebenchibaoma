@@ -3,12 +3,10 @@
 */
 module gamebenchibaoma.page {
 	export class BcbmPage extends game.gui.base.Page {
-		private _viewUI: ui.nqp.game_ui.benchibaoma.BenChiBaoMa_HUDUI;
+		private _viewUI: ui.ajqp.game_ui.benchibaoma.BenChiBaoMa_HUDUI;
 		private _player: any;
 		private _xianhongTmep: any = [5000, 8000, 25000, 50000];
 		private _needMoney: any = [0, 0, 0, 0];
-		private _xianhongClipList: ClipUtil[] = [];
-		private _clipArr: any[] = [ClipUtil.HUD_FONT0, ClipUtil.HUD_FONT1, ClipUtil.HUD_FONT2, ClipUtil.HUD_FONT3];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -19,10 +17,8 @@ module gamebenchibaoma.page {
 				PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_0.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_1.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.png",
+				PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong_general_effect + "anniug.atlas",
 			];
 			this._isNeedDuang = false;
 		}
@@ -36,15 +32,6 @@ module gamebenchibaoma.page {
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = false;
 			}
-			for (let index = 0; index < 4; index++) {
-				if (!this._xianhongClipList[index]) {
-					this._xianhongClipList[index] = new ClipUtil(this._clipArr[index]);
-					this._xianhongClipList[index].x = this._viewUI["clip_xianhong" + index].x;
-					this._xianhongClipList[index].y = this._viewUI["clip_xianhong" + index].y;
-					this._viewUI["clip_xianhong" + index].parent && this._viewUI["clip_xianhong" + index].parent.addChild(this._xianhongClipList[index]);
-					this._viewUI["clip_xianhong" + index].removeSelf();
-				}
-			}
 		}
 
 		// 页面打开时执行函数
@@ -56,7 +43,7 @@ module gamebenchibaoma.page {
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = true;
 				Laya.Tween.from(this._viewUI.box_right._childs[index], {
-					right: -300
+					x: 1280
 				}, 200 + index * 100, Laya.Ease.linearNone);
 			}
 
@@ -64,7 +51,6 @@ module gamebenchibaoma.page {
 			this._viewUI.img_room1.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.img_room2.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 			this._viewUI.img_room3.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.btn_join.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 		}
 
 		protected onBtnTweenEnd(e: LEvent, target: any): void {
@@ -83,11 +69,6 @@ module gamebenchibaoma.page {
 				case this._viewUI.img_room3:
 					this.EnterRoom(3);
 					break;
-				// case this._viewUI.btn_join:
-				// 	let maplv = TongyongUtil.getJoinMapLv(BenchibaomaPageDef.GAME_NAME, this._player.playerInfo.money);
-				// 	if (!maplv) return;
-				// 	this._game.sceneObjectMgr.intoStory(BenchibaomaPageDef.GAME_NAME, maplv.toString(), true);
-				// 	break;
 				default:
 					break;
 			}
@@ -102,10 +83,9 @@ module gamebenchibaoma.page {
 		}
 
 		private initPlayerInfo(): void {
-			for (let index = 0; index < this._xianhongClipList.length; index++) {
-				this._xianhongClipList[index].setText(this._xianhongTmep[index], true);
+			for (let index = 0; index < this._xianhongTmep.length; index++) {
+				this._viewUI["txt_xianhong" + index].text = "底分：" + this._xianhongTmep[index]
 			}
-			// this._viewUI["lab_money" + index].text = "准入: " + this._needMoney[index];
 		}
 
 		public close(): void {
@@ -114,7 +94,6 @@ module gamebenchibaoma.page {
 				this._viewUI.img_room1.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.img_room2.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				this._viewUI.img_room3.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-				this._viewUI.btn_join.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 				for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 					Laya.timer.clearAll(this._viewUI.box_right._childs[index]);
 				}

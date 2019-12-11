@@ -71,25 +71,24 @@ module gamebenchibaoma.page {
         Path_game_benchibaoma.ui_benchibaoma + "tu_bm2.png"
     ];
     export class BcbmMapPage extends game.gui.base.Page {
-        private _viewUI: ui.nqp.game_ui.benchibaoma.BenChiBaoMaUI;
+        private _viewUI: ui.ajqp.game_ui.benchibaoma.BenChiBaoMaUI;
         private _bcbmStory: BenchibaomaStory;
         private _bcbmMapInfo: BenchibaomaMapInfo;
 
         private _seatlimit: number;//入座金币
-        private _seatList: Array<any> = [];//座位UI集合
+        private _seatUIList: Array<any> = [];//座位UI集合
         private _unitSeated: Array<any> = [];//入座精灵信息集合
 
         private _curChip: number;//当前选择筹码
         private _curChipY: number;//当前选择筹码y轴位置
-        private _chipList: Array<Button> = [];//筹码UI集合
-        private _chipGuangList: Array<LImage> = [];//筹码光效UI集合
+        private _chipUIList: Array<ui.ajqp.game_ui.tongyong.effect.Effect_cmUI> = [];//筹码UI集合
         private _chipArr: Array<number> = [];//筹码大小类型
         private _chipSortScore: number = 0;//筹码层级
         private _lottery: string = "";//中奖区域
         private _betMainTotal: number = 0;//玩家总下注
         private _allChips: Array<Array<any>> = [];//所有筹码
         private _areaList: Array<any> = [];//下注区域UI集合
-        private _areaKuangList: Array<any> = [];//下注区域边框集合
+        private _areaKuangUIList: Array<any> = [];//下注区域边框集合
         private _allTotalBetUI: Label[] = [];//下注文本
         private _allMainBetUI: Label[] = [];//自己下注文本
         private _allTotalBet: Array<number> = [];//所有玩家总下注
@@ -101,6 +100,7 @@ module gamebenchibaoma.page {
 
         private _mainPlayerBenefit: number = 0;//玩家收益
         private _clipList: Array<BenchibaomaClip> = [];//飘字集合
+        private _imgdiList: Array<LImage> = [];//飘字集合
 
         private _betlimit: number;//投注限额
         private _curStatus: number;//当前地图状态
@@ -121,15 +121,20 @@ module gamebenchibaoma.page {
             this._isNeedDuang = false;
             this._delta = 1000;
             this._asset = [
+                DatingPath.atlas_dating_ui + "qifu.atlas",
+                Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "pai.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + 'dating.atlas',
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
-                DatingPath.atlas_dating_ui + "qifu.atlas",
-                Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong + "general/effect/suiji.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "chongzhi.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "nyl.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "js.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "suiji.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksyx.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksxz.atlas",
             ];
         }
 
@@ -142,21 +147,23 @@ module gamebenchibaoma.page {
                 this._pageHandle = PageHandle.Get("BcbmMapPage");//额外界面控制器
             }
             this._viewUI.main_player.clip_money.visible = false;
+            this._viewUI.main_player.effWin.visible = false;
             this._effPage = new BcbmEffectPage(this._game, this._viewUI.box_car, this._viewUI);
 
-            this._seatList = [];
+            this._seatUIList = [];
             for (let i: number = 0; i < SEAT_NUM; i++) {
-                this._seatList.push(this._viewUI["seat" + i]);
-                this._seatList[i].clip_money.visible = false;
+                this._seatUIList.push(this._viewUI["seat" + i]);
+                this._seatUIList[i].clip_money.visible = false;
+                this._seatUIList[i].effWin.visible = false;
+                this._seatUIList[i].img_qifu.visible = false;
+                this._seatUIList[i].img_vip.visible = false;
             }
 
-            this._chipList = [];
-            this._chipGuangList = [];
+            this._chipUIList = [];
             for (let i: number = 0; i < CHIP_TYPE_NUM; i++) {
-                this._chipList.push(this._viewUI["btn_chip" + i]);
-                this._chipGuangList.push(this._viewUI["guang" + i]);
+                this._chipUIList.push(this._viewUI["btn_chip" + i]);
                 if (i == 0) {
-                    this._curChipY = this._chipList[i].y;
+                    this._curChipY = this._chipUIList[i].y + 10;
                 }
             }
 
@@ -172,13 +179,13 @@ module gamebenchibaoma.page {
             }
 
             this._areaList = [];
-            this._areaKuangList = [];
+            this._areaKuangUIList = [];
             this._allMainBetUI = [];
             this._allTotalBetUI = [];
             for (let i: number = 0; i < BET_AREA_NUM; i++) {
                 this._areaList.push(this._viewUI["area" + i]);
-                this._areaKuangList.push(this._viewUI["kuang" + i]);
-                this._areaKuangList[i].visible = false;
+                this._areaKuangUIList.push(this._viewUI["kuang" + i]);
+                this._areaKuangUIList[i].visible = false;
                 this._allMainBetUI[i] = this._viewUI["txt_main_" + i];
                 this._allTotalBetUI[i] = this._viewUI["txt_total_" + i];
             }
@@ -205,9 +212,7 @@ module gamebenchibaoma.page {
             }
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_benchibaoma.music_benchibaoma + "BGM_1.mp3");
-            this._viewUI.btn_repeat.disabled = true;
-            this._viewUI.btn_spread.left = this._game.isFullScreen ? 30 : 10;
-            this._viewUI.box_menu.left = this._game.isFullScreen ? 25 : 10;
+            this._viewUI.box_left.left = this._game.isFullScreen ? 23 : 3;
         }
 
         // 页面打开时执行函数
@@ -254,57 +259,49 @@ module gamebenchibaoma.page {
             this._viewUI.btn_chongzhi.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_repeat.on(LEvent.CLICK, this, this.onBtnClickWithTween);
             this._viewUI.btn_qifu.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onClickHandle);
+            this._viewUI.btn_playerList.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 
 
-            for (let i: number = 0; i < this._seatList.length; i++) {
-                this._seatList[i] && this._seatList[i].on(LEvent.CLICK, this, this.onSelectSeat, [i]);
+            for (let i: number = 0; i < this._seatUIList.length; i++) {
+                this._seatUIList[i] && this._seatUIList[i].on(LEvent.CLICK, this, this.onSelectSeat, [i]);
             }
 
-            for (let i: number = 0; i < this._chipList.length; i++) {
-                this._chipList[i] && this._chipList[i].on(LEvent.CLICK, this, this.onSelectChip, [i]);
+            for (let i: number = 0; i < this._chipUIList.length; i++) {
+                this._chipUIList[i] && this._chipUIList[i].on(LEvent.CLICK, this, this.onSelectChip, [i]);
             }
 
             for (let i: number = 0; i < this._areaList.length; i++) {
-                this._areaList[i] && this._areaList[i].on(LEvent.CLICK, this, this.onAreaBetClick, [i]);
+                this._areaList[i].on(LEvent.MOUSE_OUT, this, this.onAreaBetMouseOut, [i]);
+                this._areaList[i].on(LEvent.MOUSE_DOWN, this, this.onAreaBetMouseDown, [i]);
+                this._areaList[i].on(LEvent.MOUSE_UP, this, this.onAreaBetMouseUp, [i]);
             }
         }
 
         protected onMouseClick(e: LEvent) {
             if (e.target != this._viewUI.btn_spread) {
-                this.showMenu(false);
+                this.menuTween(false);
             }
         }
 
-        showMenu(isShow: boolean) {
-            if (isShow) {
+        //菜单栏
+        private menuTween(isOpen: boolean) {
+            if (isOpen) {
                 this._viewUI.box_menu.visible = true;
-                this._viewUI.btn_spread.visible = false;
-                this._viewUI.box_menu.y = -this._viewUI.box_menu.height;
-                Laya.Tween.clearAll(this._viewUI.box_menu);
-                Laya.Tween.to(this._viewUI.box_menu, { y: 10 }, 300, Laya.Ease.circIn)
+                this._viewUI.box_menu.scale(0.2, 0.2);
+                this._viewUI.box_menu.alpha = 0;
+                Laya.Tween.to(this._viewUI.box_menu, { scaleX: 1, scaleY: 1, alpha: 1 }, 500, Laya.Ease.backInOut);
             } else {
-                if (this._viewUI.box_menu.y >= 0) {
-                    Laya.Tween.clearAll(this._viewUI.box_menu);
-                    Laya.Tween.to(this._viewUI.box_menu, { y: -this._viewUI.box_menu.height }, 300, Laya.Ease.circIn, Handler.create(this, () => {
-                        this._viewUI.btn_spread.visible = true;
-                        this._viewUI.box_menu.visible = false;
-                    }));
-                }
+                Laya.Tween.to(this._viewUI.box_menu, { scaleX: 0.2, scaleY: 0.2, alpha: 0 }, 500, Laya.Ease.backInOut, Handler.create(this, () => {
+                    this._viewUI.box_menu.visible = false;
+                }));
             }
-        }
-
-        //点击事件
-        protected onClickHandle(e: LEvent): void {
-            //玩家列表
-            this._game.uiRoot.general.open(BenchibaomaPageDef.PAGE_BCBM_PLAYER_LIST);
         }
 
         //按钮缓动回调
         protected onBtnTweenEnd(e: any, target: any): void {
             switch (target) {
                 case this._viewUI.btn_spread:
-                    this.showMenu(true);
+                    this.menuTween(!this._viewUI.box_menu.visible);
                     break;
                 case this._viewUI.btn_rule:
                     this._game.uiRoot.general.open(BenchibaomaPageDef.PAGE_BCBM_RULE);
@@ -314,6 +311,9 @@ module gamebenchibaoma.page {
                     break;
                 case this._viewUI.btn_qifu:
                     this._game.uiRoot.general.open(DatingPageDef.PAGE_QIFU)
+                    break;
+                case this._viewUI.btn_playerList:
+                    this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_PLAYER_LIST)
                     break;
                 case this._viewUI.btn_zhanji:
                     this._game.uiRoot.general.open(TongyongPageDef.PAGE_TONGYONG_RECORD, (page) => {
@@ -331,7 +331,7 @@ module gamebenchibaoma.page {
                         return;
                     }
 
-                    TongyongPageDef.ins.alertClose("benchibaoma", this, this.onClickCancle);
+                    this._game.sceneObjectMgr.leaveStory(true);
                     break;
                 case this._viewUI.btn_repeat:
                     this.repeatBet();
@@ -344,12 +344,6 @@ module gamebenchibaoma.page {
             }
         }
 
-        //确定退出回调
-        private onClickCancle(): void {
-            this._game.sceneObjectMgr.leaveStory(true);
-            // this.close();
-        }
-
         //选择座位入座
         private onSelectSeat(index: number): void {
             let mainUnit = this._game.sceneObjectMgr.mainUnit;
@@ -359,15 +353,6 @@ module gamebenchibaoma.page {
                 return;
             }
             this._game.network.call_benchibaoma_seated(index + 1);
-        }
-
-        //选择筹码
-        private onSelectChip(index: number): void {
-            this._curChip = this._chipArr[index];
-            for (let i: number = 0; i < this._chipList.length; i++) {
-                this._chipGuangList[i].visible = i == index;
-                this._chipList[i].y = i == index ? this._curChipY - 10 : this._curChipY;
-            }
         }
 
         //重复下注
@@ -398,19 +383,40 @@ module gamebenchibaoma.page {
                     }
                 }
             }
+            this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             this._betWait = true;
-            Laya.timer.once(500, this, () => {
+            Laya.timer.once(100, this, () => {
                 this._betWait = false;
             })
         }
 
-        //下注
+        private kuangShanShuo(img) {
+            img.alpha = 0;
+            Laya.Tween.to(img, { alpha: 1 }, 333, null, Handler.create(this, () => {
+                this.kuangShanShuo(img);
+            }))
+        }
+
         private _betWait: boolean = false;
-        private onAreaBetClick(index: number, e: LEvent): void {
+        private onAreaBetMouseOut(index: number, e: LEvent): void {
+            if (this._curStatus == MAP_STATUS.PLAY_STATUS_BET) {
+                this._areaKuangUIList[index].visible = false;
+            }
+        }
+
+        private onAreaBetMouseDown(index: number, e: LEvent): void {
+            if (this._curStatus == MAP_STATUS.PLAY_STATUS_BET) {
+                this._areaKuangUIList[index].visible = true;
+            }
+        }
+
+        //区域下注
+        private onAreaBetMouseUp(index: number, e: LEvent): void {
             if (this._curStatus != MAP_STATUS.PLAY_STATUS_BET) {
                 this._game.uiRoot.topUnder.showTips("当前不在下注时间，请在下注时间再进行下注！");
                 return;
             }
+            this._areaKuangUIList[index].visible = false;
             if (this._betWait) return;//投注间隔
             let total = this._allMainBet[index];
             if (this._curChip + total > this._betlimit) {
@@ -429,13 +435,73 @@ module gamebenchibaoma.page {
                 this._game.uiRoot.topUnder.showTips("老板，您的金币不足哦~");
                 return;
             }
+            this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             this._betWait = true;
-            this._areaKuangList[index].visible = true;
-            Laya.timer.once(500, this, () => {
+            Laya.timer.once(100, this, () => {
                 this._betWait = false;
-                this._areaKuangList[index].visible = false;
             })
             this._game.network.call_benchibaoma_bet(this._curChip, index + 1)
+        }
+
+        //筹码点击事件
+        private onClickChip(index: number, e: LEvent): void {
+            if (this._chipArr[index] == this._curChip) return;
+            this._game.uiRoot.btnTween(e.currentTarget);
+            this.onSelectChip(index);
+        }
+
+        //选择筹码
+        private onSelectChip(index: number): void {
+            this._curChip = this._chipArr[index];
+            for (let i: number = 0; i < this._chipUIList.length; i++) {
+                this._chipUIList[i].y = i == index ? this._curChipY - 10 : this._curChipY;
+                this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
+                if (i == index) {
+                    this._chipUIList[i].ani1.play(0, true);
+                } else {
+                    this._chipUIList[i].ani1.gotoAndStop(0);
+                }
+            }
+        }
+
+        //筹码是否置灰（是否下注阶段）
+        private onChipDisabled(isBetState: boolean): void {
+            this.onUpdateChipGrey(isBetState);
+            this._viewUI.btn_repeat.disabled = !isBetState;
+            if (isBetState) {
+                let index = this._chipArr.indexOf(this._curChip);
+                for (let i: number = 0; i < this._chipUIList.length; i++) {
+                    Laya.Tween.to(this._chipUIList[i], { y: i == index ? this._curChipY - 10 : this._curChipY }, 300);
+                    this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
+                    if (i == index) {
+                        this._chipUIList[i].ani1.play(0, true);
+                    } else {
+                        this._chipUIList[i].ani1.gotoAndStop(0);
+                    }
+                }
+            } else {
+                for (let i: number = 0; i < this._chipUIList.length; i++) {
+                    Laya.Tween.to(this._chipUIList[i], { y: this._curChipY + 10 }, 300);
+                    this._chipUIList[i].disabled = true;
+                    this._chipUIList[i].ani1.gotoAndStop(0);
+                    this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = false;
+                }
+            }
+        }
+
+        private onUpdateChipGrey(isBetState: boolean) {
+            if (!this._game.sceneObjectMgr.mainUnit) return;
+            if (!isBetState) return;
+            let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
+            for (let i = 0; i < this._chipUIList.length; i++) {
+                let index = this._chipUIList.length - 1 - i;
+                if (money < this._chipArr[index]) {
+                    this._chipUIList[index].disabled = true;
+                    this._chipUIList[index].y = this._curChipY;
+                } else {
+                    this._chipUIList[index].disabled = false;
+                }
+            }
         }
 
         private _curDiffTime: number;
@@ -459,7 +525,7 @@ module gamebenchibaoma.page {
                     time %= 600;
                     if (time > 300) time = 600 - time;
                     let per: number = time / 300;
-                    this._areaKuangList[this._lotteryKuangIndex - 1].alpha = per;
+                    this._areaKuangUIList[this._lotteryKuangIndex - 1].alpha = per;
                 }
             }
         }
@@ -526,11 +592,7 @@ module gamebenchibaoma.page {
                             this._viewUI.main_player.img_qifu.visible = true;
                             this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                         })
-                    } 
-                    // else {
-                    //     this._viewUI.main_player.img_qifu.visible = true;
-                    //     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
-                    // }
+                    }
                 } else {
                     this._viewUI.main_player.img_qifu.visible = false;
                     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
@@ -561,7 +623,6 @@ module gamebenchibaoma.page {
             }
             let innerHtml = StringU.substitute("在线<span style='color:#18ff00'>{0}</span>人", onlineNum);
             this._htmlText.innerHTML = innerHtml;
-            this.onUpdateChipGrey();
             this.onUpdateSeatedList(qifu_index);
         }
 
@@ -637,7 +698,8 @@ module gamebenchibaoma.page {
 
                 if (!this._chipArr) return;
                 for (let i = 0; i < this._chipArr.length; i++) {
-                    this._chipList[i].label = EnumToString.sampleChipNum(this._chipArr[i]);
+                    this._chipUIList[i].btn_num.label = EnumToString.sampleChipNum(this._chipArr[i]);
+                    this._chipUIList[i].btn_num.skin = StringU.substitute(PathGameTongyong.ui_tongyong_general + "tu_cm{0}.png", i);
                 }
                 if (!this._curChip) this.onSelectChip(0);
             }
@@ -654,8 +716,8 @@ module gamebenchibaoma.page {
             if (!this._unitSeated.length) {
                 return;
             }
-            for (let i = 0; i < this._seatList.length; i++) {
-                let seat = this._seatList[i];
+            for (let i = 0; i < this._seatUIList.length; i++) {
+                let seat = this._seatUIList[i];
                 let unitIndex = this._unitSeated[i][0];
                 let unit = this._game.sceneObjectMgr.getUnitByIdx(unitIndex);
                 if (unit) {
@@ -680,7 +742,7 @@ module gamebenchibaoma.page {
                                 seat.img_qifu.visible = true;
                                 seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
                             })
-                        } 
+                        }
                         // else {
                         //     seat.img_qifu.visible = true;
                         //     seat.img_icon.skin = TongyongUtil.getHeadUrl(unit.GetHeadImg(), 2);
@@ -706,23 +768,6 @@ module gamebenchibaoma.page {
             this._countDown = this._bcbmMapInfo.GetCountDown();
         }
 
-        private onUpdateChipGrey() {
-            if (!this._game.sceneObjectMgr.mainUnit) return;
-            let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
-            for (let i = 0; i < this._chipList.length; i++) {
-                let index = this._chipList.length - 1 - i;
-                if (money < this._chipArr[index]) {
-                    this._chipList[index].disabled = true;
-                    this._chipList[index].y = this._curChipY;
-                    if (this._curChip == this._chipArr[index]) {
-
-                    }
-                } else {
-                    this._chipList[index].disabled = false;
-                }
-            }
-        }
-
         private isPlayingEff(): boolean {
             return this._effPage && this._effPage.isPlaying;
         }
@@ -733,8 +778,8 @@ module gamebenchibaoma.page {
             let mainPlayerInfo = mainPlayer.playerInfo;
             this._viewUI.main_player.txt_name.text = getMainPlayerName(mainPlayerInfo.nickname);
             this._viewUI.main_player.txt_money.text = EnumToString.getPointBackNum(mainPlayerInfo.money, 2).toString();
-            this._viewUI.main_player.img_qifu.visible = TongyongUtil.getIsHaveQiFu(mainPlayer, this._game.sync.serverTimeBys);            
-            this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainPlayer.GetHeadImg(), 2);            
+            this._viewUI.main_player.img_qifu.visible = TongyongUtil.getIsHaveQiFu(mainPlayer, this._game.sync.serverTimeBys);
+            this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainPlayer.GetHeadImg(), 2);
             this._viewUI.main_player.img_txk.skin = TongyongUtil.getTouXiangKuangUrl(mainPlayer.GetHeadKuangImg());
             this._viewUI.main_player.img_vip.visible = mainPlayer.playerInfo.vip_level > 0;
             this._viewUI.main_player.img_vip.skin = TongyongUtil.getVipUrl(mainPlayer.playerInfo.vip_level);
@@ -810,9 +855,9 @@ module gamebenchibaoma.page {
                 if (totalIdx == endIdx) {
                     this._lotteryKuangIndex = this._lotteryIndex;
                     this._lotteryStartTime = this._game.sync.serverTimeBys * 1000;
-                    if (this._areaKuangList[this._lotteryKuangIndex - 1]) this._areaKuangList[this._lotteryKuangIndex - 1].visible = true;
+                    if (this._areaKuangUIList[this._lotteryKuangIndex - 1]) this._areaKuangUIList[this._lotteryKuangIndex - 1].visible = true;
                     Laya.timer.once(3000, this, () => {
-                        if (this._areaKuangList[this._lotteryKuangIndex - 1]) this._areaKuangList[this._lotteryKuangIndex - 1].visible = false;
+                        if (this._areaKuangUIList[this._lotteryKuangIndex - 1]) this._areaKuangUIList[this._lotteryKuangIndex - 1].visible = false;
                         this._lotteryKuangIndex = 0;
                         this._lotteryStartTime = 0;
                     })
@@ -832,19 +877,15 @@ module gamebenchibaoma.page {
             let isMainPlayer: boolean = info.SeatIndex == mainIdx;
             if (isMainPlayer) {//主玩家
                 startIdx = 0;
-                this.moveHead(this._viewUI.main_player, this._mainHeadPos[0][0], this._mainHeadPos[0][1], this._mainHeadPos[1][0], this._mainHeadPos[1][1]);
             } else {//其他玩家
                 startIdx = 1;
                 for (let i = 0; i < this._unitSeated.length; i++) {
                     let unitIndex = this._unitSeated[i][0];
                     let unit = this._game.sceneObjectMgr.getUnitByIdx(unitIndex);
                     if (unit && info.SeatIndex == unitIndex) {
-                        this.moveHead(this._seatList[i], this._headStartPos[i][0], this._headStartPos[i][1], this._headEndPos[i][0], this._headEndPos[i][1]);
+                        this.moveHead(this._seatUIList[i], this._headStartPos[i][0], this._headStartPos[i][1], this._headEndPos[i][0], this._headEndPos[i][1]);
                         startIdx = 3 + i;
                     }
-                }
-                if (startIdx == 1) {
-                    this.moveHead(this._viewUI.btn_playerList, 70, 657, 89, 639);
                 }
             }
             targetIdx = info.BetIndex;
@@ -856,8 +897,8 @@ module gamebenchibaoma.page {
         //头像出筹码动态效果
         private moveHead(view, startX, startY, endX, endY): void {
             Laya.Tween.clearAll(view);
-            Laya.Tween.to(view, { x: endX, y: endY }, 150, null, Handler.create(this, () => {
-                Laya.Tween.to(view, { x: startX, y: startY }, 150);
+            Laya.Tween.to(view, { x: endX, y: endY }, 50, null, Handler.create(this, () => {
+                Laya.Tween.to(view, { x: startX, y: startY }, 50);
             }))
         }
 
@@ -878,14 +919,14 @@ module gamebenchibaoma.page {
             }
         }
 
+        private _clipResult: any[] = [];
         private onBattleSettle(info: any): void {
             if (!this._game.sceneObjectMgr.mainUnit) return;
             if (this._game.sceneObjectMgr.mainUnit.GetIndex() == info.SeatIndex) {
                 this._mainPlayerBenefit = parseFloat(info.SettleVal);
             }
             if (info.SettleVal == 0) return;
-            if (info.SettleVal == 0) return;
-            this.addMoneyClip(info.SeatIndex, info.SettleVal);
+            this._clipResult.push([info.SeatIndex, info.SettleVal]);
         }
 
         //更新地图状态
@@ -894,15 +935,14 @@ module gamebenchibaoma.page {
             let mapStatus = this._bcbmMapInfo.GetMapState();
             if (this._curStatus == mapStatus) return;
             this._curStatus = mapStatus;
-            this._viewUI.btn_repeat.disabled = this._curStatus != MAP_STATUS.PLAY_STATUS_BET;
             if (this._game.uiRoot.HUD.isOpened(BenchibaomaPageDef.PAGE_BCBM_TONGSHA) && this._curStatus >= MAP_STATUS.PLAY_STATUS_WASH_CARD) {
                 this._pageHandle.pushClose({ id: BenchibaomaPageDef.PAGE_BCBM_TONGSHA, parent: this._game.uiRoot.HUD });
             }
+            this.onChipDisabled(this._curStatus == MAP_STATUS.PLAY_STATUS_BET);
             this._viewUI.box_tip.visible = false;
             this._viewUI.txt_status.visible = false;
             switch (this._curStatus) {
                 case MAP_STATUS.PLAY_STATUS_NONE:// 准备阶段
-                    // this._viewUI.box_tip.visible = true;
                     this._viewUI.txt_status.text = "";
                     this.resetUI();
                     this._pageHandle.pushClose({ id: TongyongPageDef.PAGE_TONGYONG_SETTLE, parent: this._game.uiRoot.HUD });
@@ -928,15 +968,21 @@ module gamebenchibaoma.page {
                     }
                     this._viewUI.btn_repeat.disabled = !bool;
 
-                    // for (let i = 0; i < this._areaKuangList.length; i++) {
-                    //     this._areaKuangList[i].visible = true;
-                    //     // this._areaKuangList[i].ani1.play(0, true);
-                    //     Laya.timer.once(1000, this, () => {
-                    //         // this._areaKuangList[i].ani1.stop();
-                    //     });
-                    // }
+                    for (let i = 0; i < this._areaKuangUIList.length; i++) {
+                        this._areaKuangUIList[i].visible = true;
+                        this.kuangShanShuo(this._areaKuangUIList[i]);
+                        Laya.timer.once(1000, this, () => {
+                            this._areaKuangUIList[i].visible = false;
+                            this._areaKuangUIList[i].alpha = 1;
+                            Laya.Tween.clearAll(this._areaKuangUIList[i]);
+                            Laya.timer.clearAll(this._areaKuangUIList[i]);
+                        });
+                    }
                     break;
                 case MAP_STATUS.PLAY_STATUS_STOP_BET:// 停止下注阶段
+                    for (let i: number = 0; i < this._areaKuangUIList.length; i++) {
+                        this._areaKuangUIList[i].visible = false;
+                    }
                     this._pageHandle.pushOpen({ id: BenchibaomaPageDef.PAGE_BCBM_END, parent: this._game.uiRoot.HUD });
                     this._game.playSound(Path_game_benchibaoma.music_benchibaoma + "dingding_end.mp3");
                     this._game.playSound(Path_game_benchibaoma.music_benchibaoma + "xiazhu_end.mp3");
@@ -970,7 +1016,6 @@ module gamebenchibaoma.page {
                     this.flyChipEffect();
                     this.updateMoney();
                     Laya.timer.once(1000, this, () => {
-
                         if (this._mainPlayerBenefit > 0) {
                             let rand = MathU.randomRange(1, 3);
                             this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "win{0}.mp3", rand), true);
@@ -979,6 +1024,14 @@ module gamebenchibaoma.page {
                             this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "lose{0}.mp3", rand), true);
                         }
                     });
+                    Laya.timer.once(2200, this, () => {
+                        if (this._clipResult && this._clipResult.length > 0) {
+                            for (let i = 0; i < this._clipResult.length; i++) {
+                                let info = this._clipResult[i];
+                                this.addMoneyClip(info[0], info[1]);
+                            }
+                        }
+                    })
                     break;
                 case MAP_STATUS.PLAY_STATUS_SHOW_INFO:// 显示结算框阶段
                     //打开结算界面
@@ -1031,6 +1084,7 @@ module gamebenchibaoma.page {
             this._battleIndex = -1;
             this._mainPlayerBenefit = 0;
             this._betMainTotal = 0;
+            this._clipResult = [];
             this._lottery = "";
             this.clearClips();
             this.clearChip();
@@ -1040,6 +1094,9 @@ module gamebenchibaoma.page {
                 this._allMainBetUI[i].text = "0";
                 this._allTotalBetUI[i].text = "0";
             }
+            for (let i: number = 0; i < this._areaKuangUIList.length; i++) {
+                this._areaKuangUIList[i].visible = false;
+            }
             if (this._effPage) {
                 this._effPage.clear();
             }
@@ -1047,11 +1104,9 @@ module gamebenchibaoma.page {
 
         //金币变化 飘字clip
         public addMoneyClip(index: number, value: number): void {
-            let valueClip = value >= 0 ? new BenchibaomaClip(BenchibaomaClip.ADD_MONEY_FONT) : new BenchibaomaClip(BenchibaomaClip.SUB_MONEY_FONT);
+            let clip_money = value >= 0 ? new BenchibaomaClip(BenchibaomaClip.ADD_MONEY_FONT) : new BenchibaomaClip(BenchibaomaClip.SUB_MONEY_FONT);
             let preSkin = value >= 0 ? PathGameTongyong.ui_tongyong_general + "tu_jia.png" : PathGameTongyong.ui_tongyong_general + "tu_jian.png";
-            valueClip.scale(0.8, 0.8);
-            valueClip.anchorX = 0.5;
-            valueClip.setText(Math.abs(value) + "", true, false, preSkin);
+            let img_di = value >= 0 ? new LImage(PathGameTongyong.ui_tongyong_general + "tu_yingqian.png") : new LImage(PathGameTongyong.ui_tongyong_general + "tu_shuqian.png");
             let playerIcon: any;
             if (index == this._game.sceneObjectMgr.mainUnit.GetIndex()) {
                 playerIcon = this._viewUI.main_player;
@@ -1066,18 +1121,31 @@ module gamebenchibaoma.page {
                         bool = true;
                     }
                 }
-                // logd("座位" + seatIndex);
                 if (!seatIndex) return;
                 if (!bool) return;
-                playerIcon = this._seatList[seatIndex - 1];
+                playerIcon = this._seatUIList[seatIndex - 1];
             }
-            valueClip.x = playerIcon.clip_money.x;
-            valueClip.y = playerIcon.clip_money.y;
-            playerIcon.clip_money.parent.addChild(valueClip);
-            this._clipList.push(valueClip);
+            //飘字底
+            img_di.centerX = playerIcon.img_di.centerX;
+            img_di.centerY = playerIcon.img_di.centerY;
+            playerIcon.img_di.parent.addChild(img_di);
+            this._imgdiList.push(img_di);
+            playerIcon.img_di.visible = false;
+            //飘字
+            clip_money.setText(Math.abs(value), true, false, preSkin);
+            clip_money.centerX = playerIcon.clip_money.centerX;
+            clip_money.centerY = playerIcon.clip_money.centerY;
+            playerIcon.clip_money.parent.addChild(clip_money);
+            this._clipList.push(clip_money);
             playerIcon.clip_money.visible = false;
-            Laya.Tween.clearAll(valueClip);
-            Laya.Tween.to(valueClip, { y: valueClip.y - 25 }, 1500);
+            //飘字box缓动
+            playerIcon.box_clip.y = 57;
+            playerIcon.box_clip.visible = true;
+            Laya.Tween.clearAll(playerIcon.box_clip);
+            Laya.Tween.to(playerIcon.box_clip, { y: playerIcon.box_clip.y - 50 }, 1000);
+            //赢钱动画
+            playerIcon.effWin.visible = value > 0;
+            value > 0 && playerIcon.effWin.ani1.play(0, false);
         }
 
         //清理飘字clip
@@ -1091,6 +1159,16 @@ module gamebenchibaoma.page {
                 }
             }
             this._clipList = [];
+
+            if (this._imgdiList && this._imgdiList.length) {
+                for (let j: number = 0; j < this._imgdiList.length; j++) {
+                    let imgdi = this._imgdiList[j];
+                    imgdi.removeSelf();
+                    imgdi.destroy(true);
+                    imgdi = null;
+                }
+            }
+            this._imgdiList = [];
         }
 
         //创建筹码
@@ -1104,10 +1182,8 @@ module gamebenchibaoma.page {
                 chip.drawChip();
             }
             else {
-                Laya.timer.once(350, this, () => {
-                    chip.sendChip();
-                    this._game.playSound(Path_game_benchibaoma.music_benchibaoma + "chouma.mp3", false);
-                })
+                chip.sendChip();
+                this._game.playSound(Path_game_benchibaoma.music_benchibaoma + "chouma.mp3", false);
             }
             this._chipSortScore = index;//存下来最后一个筹码层级
         }
@@ -1124,7 +1200,7 @@ module gamebenchibaoma.page {
                         chip.flyChip(2, false, j, this._game);//庄家先收筹码
                     }
                 } else {
-                    Laya.timer.once(1100, this, () => {
+                    Laya.timer.once(800, this, () => {
                         this._game.playSound(Path_game_benchibaoma.music_benchibaoma + "piaoqian.mp3", false);
                         for (let j = 0; j < 20; j++) {
                             let ranType = MathU.randomRange(1, 5);
@@ -1133,7 +1209,7 @@ module gamebenchibaoma.page {
                             this.bankerFlyChip(2, i + 1, ranType, ranVal, this._chipSortScore, -1);
                         }
                     })
-                    Laya.timer.once(3000, this, this.bankerFlyToPlayerChip, [i]);
+                    Laya.timer.once(2000, this, this.bankerFlyToPlayerChip, [i]);
                 }
 
             }
@@ -1200,7 +1276,7 @@ module gamebenchibaoma.page {
                 this._viewUI.btn_chongzhi.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_repeat.off(LEvent.CLICK, this, this.onBtnClickWithTween);
                 this._viewUI.btn_qifu.off(LEvent.CLICK, this, this.onBtnClickWithTween);
-                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onClickHandle);
+                this._viewUI.btn_playerList.off(LEvent.CLICK, this, this.onBtnClickWithTween);
 
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_ADD_UNIT, this, this.onUnitAdd);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_REMOVE_UNIT, this, this.onUnitRemove);
@@ -1220,12 +1296,12 @@ module gamebenchibaoma.page {
                 this._game.qifuMgr.off(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
                 this.resetUI();
-                if (this._seatList) {
-                    for (let i: number = 0; i < this._seatList.length; i++) {
-                        this._seatList[i] && this._seatList[i].off(LEvent.CLICK, this, this.onSelectSeat);
-                        this._seatList[i] = null;
+                if (this._seatUIList) {
+                    for (let i: number = 0; i < this._seatUIList.length; i++) {
+                        this._seatUIList[i] && this._seatUIList[i].off(LEvent.CLICK, this, this.onSelectSeat);
+                        this._seatUIList[i] = null;
                     }
-                    this._seatList.length = 0;
+                    this._seatUIList.length = 0;
                 }
                 if (this._unitSeated) {
                     for (let i: number = 0; i < this._unitSeated.length; i++) {
@@ -1234,19 +1310,20 @@ module gamebenchibaoma.page {
                     this._unitSeated.length = 0;
                 }
 
-                if (this._chipList) {
-                    for (let i: number = 0; i < this._chipList.length; i++) {
-                        this._chipList[i] && this._chipList[i].off(LEvent.CLICK, this, this.onSelectChip);
+                if (this._chipUIList) {
+                    for (let i: number = 0; i < this._chipUIList.length; i++) {
+                        this._chipUIList[i] && this._chipUIList[i].off(LEvent.CLICK, this, this.onSelectChip);
                     }
-                    this._chipList.length = 0;
+                    this._chipUIList.length = 0;
                 }
-                this._chipGuangList = [];
                 this._allChips = [];
-                if (this._areaKuangList) {
+                if (this._areaKuangUIList) {
                     for (let i: number = 0; i < this._areaList.length; i++) {
-                        this._areaList[i] && this._areaList[i].off(LEvent.CLICK, this, this.onAreaBetClick);
+                        this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_OUT, this, this.onAreaBetMouseOut);
+                        this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_DOWN, this, this.onAreaBetMouseDown);
+                        this._areaList[i] && this._areaList[i].off(LEvent.MOUSE_UP, this, this.onAreaBetMouseUp);
                     }
-                    this._areaKuangList = [];
+                    this._areaKuangUIList = [];
                 }
                 this._areaList = [];
                 this._allMainBetUI = [];
@@ -1288,7 +1365,7 @@ module gamebenchibaoma.page {
         Path_game_benchibaoma.ui_benchibaoma + "tu_bc3.png",
         Path_game_benchibaoma.ui_benchibaoma + "tu_bm3.png"
     ];
-    class MapRecordRender extends ui.nqp.game_ui.benchibaoma.component.RecordItemUI {
+    class MapRecordRender extends ui.ajqp.game_ui.benchibaoma.component.RecordItemUI {
         private _game: Game;
         private _data: any;
         constructor() {

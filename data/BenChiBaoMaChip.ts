@@ -15,7 +15,7 @@ module gamebenchibaoma.data {
 		public _seatIndex: number;//精灵座位归属
 		//初始位置，终点位置，筹码类型，筹码大小，筹码层级
 		setData(startIdx: number, targetIdx: number, type: number, value: number, index: number, unitIndex: number) {
-			this.size = 0.4;
+			this.size = 0.44;
 			this.sortScore = 999 - index;
 			this.pos = new Vector2(this._chipStart[startIdx][0], this._chipStart[startIdx][1]);
 			this._val = value.toString();
@@ -45,11 +45,7 @@ module gamebenchibaoma.data {
 			this.targe_pos.x = target[index][0];
 			this.targe_pos.y = target[index][1];
 			if (!this.pos) return;
-			Laya.Tween.clearAll(this.pos);
-			Laya.Tween.to(this.pos, { x: this.targe_pos.x, y: this.targe_pos.y }, 500 + count * 15, Laya.Ease.backIn, Handler.create(this, () => {
-				this.isFinalPos = true;
-				game.sceneObjectMgr.clearOfflineObject(this);
-			}));
+			super.flyChipBase(500 + count * MathU.randomRange(0, 5), game);
 		}
 
 		drawChip() {

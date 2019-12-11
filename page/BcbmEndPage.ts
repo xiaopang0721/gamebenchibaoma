@@ -3,7 +3,7 @@
 */
 module gamebenchibaoma.page{
 	export class BcbmEndPage extends game.gui.base.Page {
-		private _viewUI: ui.nqp.game_ui.benchibaoma.StopUI;
+		private _viewUI: ui.ajqp.game_ui.benchibaoma.StopUI;
 		
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);

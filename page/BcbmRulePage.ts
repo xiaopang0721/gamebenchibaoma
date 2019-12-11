@@ -3,7 +3,7 @@
 */
 module gamebenchibaoma.page {
 	export class BcbmRulePage extends game.gui.base.Page {
-		private _viewUI: ui.nqp.game_ui.benchibaoma.BenChiBaoMa_GuiZeUI;
+		private _viewUI: ui.ajqp.game_ui.benchibaoma.BenChiBaoMa_GuiZeUI;
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -25,7 +25,9 @@ module gamebenchibaoma.page {
 		// 页面打开时执行函数
 		protected onOpen(): void {
 			super.onOpen();
-			
+			this._viewUI.panel_rule.vScrollBarSkin = "";
+			this._viewUI.panel_rule.vScrollBar.autoHide = true;
+			this._viewUI.panel_rule.vScrollBar.elasticDistance = 100;
 			this._viewUI.tab_btn.selectedIndex = 0;
 		}
 

@@ -14,12 +14,10 @@ module gamebenchibaoma.page {
 		static PAGE_BCBM_TONGSHA: string = "4";
 		//奔驰宝马游戏通赔界面
 		static PAGE_BCBM_TONGPEI: string = "5";
+		//奔驰宝马停止下注界面
+		static PAGE_BCBM_END: string = "6";
 		//奔驰宝马游戏规则界面
 		static PAGE_BCBM_RULE: string = "101";
-		//奔驰宝马玩家列表界面
-		static PAGE_BCBM_PLAYER_LIST: string = "10";
-		//奔驰宝马停止下注界面
-		static PAGE_BCBM_END: string = "11";
 
 
 		static myinit(str: string) {
@@ -31,25 +29,25 @@ module gamebenchibaoma.page {
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_TONGSHA] = BcbmTongShaPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_TONGPEI] = BcbmTongPeiPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_RULE] = BcbmRulePage;
-			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_PLAYER_LIST] = BcbmPlayerListPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_END] = BcbmEndPage;
 
 			this["__needLoadAsset"] = [
-				PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "pai.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "dating.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
-				Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "tuichu.atlas",
 				DatingPath.atlas_dating_ui + "qifu.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "general/effect/suiji.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "general/effect/kaipai.atlas",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_0.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_1.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_2.png",
-				Path_game_benchibaoma.ui_benchibaoma + "sk/bcbm_3.png",
+                Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "pai.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + 'dating.atlas',
+                PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "chongzhi.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "nyl.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "js.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong_general_effect + "anniug.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "suiji.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksyx.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksxz.atlas",
 
 				Path.custom_atlas_scene + 'chip.atlas',
 				Path.map + 'pz_benchibaoma.png',
