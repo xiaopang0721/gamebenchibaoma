@@ -84,7 +84,7 @@ module gamebenchibaoma.page {
 
 		private initPlayerInfo(): void {
 			for (let index = 0; index < this._xianhongTmep.length; index++) {
-				this._viewUI["txt_xianhong" + index].text = "底分：" + this._xianhongTmep[index]
+				this._viewUI["txt_xianhong" + index].text = "底分:" + this._xianhongTmep[index]
 			}
 		}
 

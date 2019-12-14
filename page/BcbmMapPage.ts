@@ -1047,7 +1047,7 @@ module gamebenchibaoma.page {
                             this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "lose{0}.mp3", rand), true);
                         }
                     });
-                    Laya.timer.once(2200, this, () => {
+                    Laya.timer.once(2500, this, () => {
                         this.onUpdateSettleMoney();
                         if (this._clipResult && this._clipResult.length > 0) {
                             for (let i = 0; i < this._clipResult.length; i++) {
@@ -1058,19 +1058,11 @@ module gamebenchibaoma.page {
                     })
                     break;
                 case MAP_STATUS.PLAY_STATUS_SHOW_INFO:// 显示结算框阶段
-                    //打开结算界面
-                    this._viewUI.clip_status.index = 2;
-                    this._pageHandle.pushOpen({
-                        id: TongyongPageDef.PAGE_TONGYONG_SETTLE,
-                        dataSource: { myBet: this._betMainTotal, myBenefit: this._mainPlayerBenefit, lottery: this._lottery },
-                        parent: this._game.uiRoot.HUD
-                    });
                     break;
                 case MAP_STATUS.PLAY_STATUS_RELAX:// 休息阶段
                     Laya.Tween.clearAll(this);
                     Laya.timer.clearAll(this);
                     this.resetUI();
-                    this._pageHandle.pushClose({ id: TongyongPageDef.PAGE_TONGYONG_SETTLE, parent: this._game.uiRoot.HUD });
                     this._bcbmStory.isReconnect = false;
                     this._viewUI.txt_status.text = "";
                     break;
