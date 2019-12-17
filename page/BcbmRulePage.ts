@@ -2,7 +2,12 @@
 * name 
 */
 module gamebenchibaoma.page {
+	const enum TYPE_INDEX {
+		TYPE_WANFA_JIESHAO = 0,
+		TYPE_BEISHU = 1,
+	}
 	export class BcbmRulePage extends game.gui.base.Page {
+
 		private _viewUI: ui.ajqp.game_ui.benchibaoma.BenChiBaoMa_GuiZeUI;
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
@@ -25,10 +30,17 @@ module gamebenchibaoma.page {
 		// 页面打开时执行函数
 		protected onOpen(): void {
 			super.onOpen();
-			this._viewUI.panel_rule.vScrollBarSkin = "";
-			this._viewUI.panel_rule.vScrollBar.autoHide = true;
-			this._viewUI.panel_rule.vScrollBar.elasticDistance = 100;
+			this._viewUI.panel_beishu.vScrollBarSkin = "";
+			this._viewUI.panel_beishu.vScrollBar.autoHide = true;
+			this._viewUI.panel_beishu.vScrollBar.elasticDistance = 100;
+
+			this._viewUI.tab_btn.selectHandler = new Handler(this, this.selectHandler);
 			this._viewUI.tab_btn.selectedIndex = 0;
+		}
+
+		private selectHandler(index: number) {
+			this._viewUI.img_rule.visible = index == TYPE_INDEX.TYPE_WANFA_JIESHAO;
+			this._viewUI.panel_beishu.visible = index == TYPE_INDEX.TYPE_BEISHU;
 		}
 
 		public close(): void {
