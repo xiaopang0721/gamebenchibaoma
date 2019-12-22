@@ -5,8 +5,9 @@ module gamebenchibaoma.page {
 	export class BcbmPage extends game.gui.base.Page {
 		private _viewUI: ui.ajqp.game_ui.benchibaoma.BenChiBaoMa_HUDUI;
 		private _player: any;
-		private _xianhongTmep: any = [5000, 8000, 25000, 50000];
+		private _xianhongTemp: any = [5000, 8000, 25000, 50000];
 		private _needMoney: any = [0, 0, 0, 0];
+		private _xianhongClipList: ClipUtil[] = [];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -31,6 +32,15 @@ module gamebenchibaoma.page {
 
 			for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 				this._viewUI.box_right._childs[index].visible = false;
+			}
+			for (let index = 0; index < 4; index++) {
+				if (!this._xianhongClipList[index]) {
+					this._xianhongClipList[index] = new ClipUtil(BenchibaomaClip.WHITE_FONT);
+					this._xianhongClipList[index].centerX = this._viewUI["txt_xianhong" + index].centerX;
+					this._xianhongClipList[index].centerY = this._viewUI["txt_xianhong" + index].centerY;
+					this._viewUI["txt_xianhong" + index].parent && this._viewUI["txt_xianhong" + index].parent.addChild(this._xianhongClipList[index]);
+					this._viewUI["txt_xianhong" + index].removeSelf();
+				}
 			}
 		}
 
@@ -83,8 +93,8 @@ module gamebenchibaoma.page {
 		}
 
 		private initPlayerInfo(): void {
-			for (let index = 0; index < this._xianhongTmep.length; index++) {
-				this._viewUI["txt_xianhong" + index].text = "底分:" + this._xianhongTmep[index]
+			for (let index = 0; index < this._xianhongClipList.length; index++) {
+				this._xianhongClipList[index] && this._xianhongClipList[index].setText(this._xianhongTemp[index], true, false, PathGameTongyong.ui_tongyong_hud + "tu_xh.png");
 			}
 		}
 
@@ -97,9 +107,18 @@ module gamebenchibaoma.page {
 				for (let index = 0; index < this._viewUI.box_right.numChildren; index++) {
 					Laya.timer.clearAll(this._viewUI.box_right._childs[index]);
 				}
+				if (this._xianhongClipList && this._xianhongClipList.length) {
+					for (let index = 0; index < this._xianhongClipList.length; index++) {
+						if (this._xianhongClipList[index]) {
+							this._xianhongClipList[index].removeSelf();
+							this._xianhongClipList[index] = null;
+						}
+					}
+					this._xianhongClipList = [];
+				}
+				this._player = null;
+				this._game.stopMusic();
 			}
-			this._player = null;
-			this._game.stopMusic();
 
 			super.close();
 		}

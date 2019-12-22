@@ -213,7 +213,6 @@ module gamebenchibaoma.page {
             }
             this._viewUI.mouseThrough = true;
             this._game.playMusic(Path_game_benchibaoma.music_benchibaoma + "BGM_1.mp3");
-            this._viewUI.box_left.left = this._game.isFullScreen ? 23 : 3;
         }
 
         // 页面打开时执行函数
@@ -242,6 +241,7 @@ module gamebenchibaoma.page {
             this._game.sceneObjectMgr.on(BenchibaomaMapInfo.EVENT_SEATED_LIST, this, this.onUpdateSeatedList);//入座列表更新
             this._game.sceneObjectMgr.on(BenchibaomaMapInfo.EVENT_STATUS_CHECK, this, this.initRoomConfig);//地图传送参数
             this._game.sceneObjectMgr.on(BenchibaomaMapInfo.EVENT_GAME_RECORD, this, this.onUpdateRecord);//游戏记录更新
+
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_ADD_UNIT, this, this.onUnitAdd);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_REMOVE_UNIT, this, this.onUnitRemove);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_MONEY_CHANGE, this, this.onUpdateUnit);
@@ -249,6 +249,7 @@ module gamebenchibaoma.page {
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_ACTION, this, this.onUpdateUnit);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_MAPINFO_CHANGE, this, this.onUpdateMapInfo);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_QIFU_TIME_CHANGE, this, this.onUpdateUnit);
+            this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_MAIN_UNIT_CHANGE, this, this.onUpdateChipGrey);
 
             this._game.qifuMgr.on(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
@@ -275,6 +276,24 @@ module gamebenchibaoma.page {
                 this._areaList[i].on(LEvent.MOUSE_OUT, this, this.onAreaBetMouseOut, [i]);
                 this._areaList[i].on(LEvent.MOUSE_DOWN, this, this.onAreaBetMouseDown, [i]);
                 this._areaList[i].on(LEvent.MOUSE_UP, this, this.onAreaBetMouseUp, [i]);
+            }
+        }
+
+        protected layout(): void {
+            super.layout();
+            if (this._viewUI) {
+                //全面屏
+                if (this._game.isFullScreen) {
+                    this._viewUI.box_top_left.left = 14 + 56;
+                    // this._viewUI.box_room_left.left = 105 + 56;
+                    this._viewUI.box_top_right.right = 28 + 56;
+                    this._viewUI.box_bottom_right.right = 12 + 56;
+                } else {
+                    this._viewUI.box_top_left.left = 14;
+                    // this._viewUI.box_room_left.left = 105;
+                    this._viewUI.box_top_right.right = 28;
+                    this._viewUI.box_bottom_right.right = 12;
+                }
             }
         }
 
@@ -467,13 +486,15 @@ module gamebenchibaoma.page {
 
         //筹码是否置灰（是否下注阶段）
         private onChipDisabled(isBetState: boolean): void {
-            this.onUpdateChipGrey(isBetState);
+            this.onUpdateChipGrey();
             this._viewUI.btn_repeat.disabled = !isBetState;
             if (isBetState) {
                 let index = this._chipArr.indexOf(this._curChip);
                 for (let i: number = 0; i < this._chipUIList.length; i++) {
                     Laya.Tween.to(this._chipUIList[i], { y: i == index ? this._curChipY - 10 : this._curChipY }, 300);
                     this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
+                    !this._chipUIList[i].disabled && (this._chipUIList[i].mouseEnabled = true);
+                    this._chipUIList[i].alpha = 1;
                     if (i == index) {
                         this._chipUIList[i].ani1.play(0, true);
                     } else {
@@ -482,23 +503,22 @@ module gamebenchibaoma.page {
                 }
             } else {
                 for (let i: number = 0; i < this._chipUIList.length; i++) {
-                    Laya.Tween.to(this._chipUIList[i], { y: this._curChipY + 10 }, 300);
-                    this._chipUIList[i].disabled = true;
+                    Laya.Tween.to(this._chipUIList[i], { y: this._curChipY + 20 }, 300);
+                    !this._chipUIList[i].disabled && (this._chipUIList[i].mouseEnabled = false);
+                    this._chipUIList[i].alpha = 0.75;
                     this._chipUIList[i].ani1.gotoAndStop(0);
                     this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = false;
                 }
             }
         }
 
-        private onUpdateChipGrey(isBetState: boolean) {
+        private onUpdateChipGrey() {
             if (!this._game.sceneObjectMgr.mainUnit) return;
-            if (!isBetState) return;
             let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
             for (let i = 0; i < this._chipUIList.length; i++) {
                 let index = this._chipUIList.length - 1 - i;
                 if (money < this._chipArr[index]) {
                     this._chipUIList[index].disabled = true;
-                    this._chipUIList[index].y = this._curChipY;
                 } else {
                     this._chipUIList[index].disabled = false;
                 }
@@ -1038,7 +1058,8 @@ module gamebenchibaoma.page {
                     this._viewUI.clip_status.index = 2;
                     this.flyChipEffect();
                     this.updateMoney();
-                    Laya.timer.once(1000, this, () => {
+                    Laya.timer.once(2800, this, () => {
+                        this.onUpdateSettleMoney();
                         if (this._mainPlayerBenefit > 0) {
                             let rand = MathU.randomRange(1, 3);
                             this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "win{0}.mp3", rand), true);
@@ -1046,9 +1067,6 @@ module gamebenchibaoma.page {
                             let rand = MathU.randomRange(1, 4);
                             this._game.playSound(StringU.substitute(PathGameTongyong.music_tongyong + "lose{0}.mp3", rand), true);
                         }
-                    });
-                    Laya.timer.once(2500, this, () => {
-                        this.onUpdateSettleMoney();
                         if (this._clipResult && this._clipResult.length > 0) {
                             for (let i = 0; i < this._clipResult.length; i++) {
                                 let info = this._clipResult[i];
@@ -1301,6 +1319,7 @@ module gamebenchibaoma.page {
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_UNIT_ACTION, this, this.onUpdateUnit);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_MAPINFO_CHANGE, this, this.onUpdateMapInfo);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_UNIT_QIFU_TIME_CHANGE, this, this.onUpdateUnit);
+                this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_MAIN_UNIT_CHANGE, this, this.onUpdateChipGrey);
 
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_STATUS_CHECK, this, this.onUpdateStatus);
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_BATTLE_CHECK, this, this.onUpdateBattle);

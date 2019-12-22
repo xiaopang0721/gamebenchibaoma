@@ -11,18 +11,12 @@ module gamebenchibaoma {
         public static ADD_MONEY_FONT: any;
         //扣钱飘字
         public static SUB_MONEY_FONT: any;
-        //底分数字初级
-        public static HUD_FONT0: any;
-        //底分数字小资
-        public static HUD_FONT1: any;
-        //底分数字老板
-        public static HUD_FONT2: any;
-        //底分数字富豪
-        public static HUD_FONT3: any;
+        //底分准入通用白字
+        public static WHITE_FONT: any;
 
         static init(): void {
             this.MONEY_FONT2 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_money1.png',
                 clipWidth: 16,
                 clipHeight: 22,
@@ -30,7 +24,7 @@ module gamebenchibaoma {
                 space: 0
             };
             this.RANK_FONT2 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_top.png',
                 clipWidth: 28,
                 clipHeight: 31,
@@ -40,7 +34,7 @@ module gamebenchibaoma {
 
             //加钱飘字
             this.ADD_MONEY_FONT = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_num1.png',
                 clipWidth: 25,
                 clipHeight: 32,
@@ -50,52 +44,22 @@ module gamebenchibaoma {
 
             //扣钱飘字
             this.SUB_MONEY_FONT = {
-                source: PathGameTongyong.atlas_game_ui_tongyong+ "general.atlas",
+                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
                 url: PathGameTongyong.ui_tongyong_general + 'clip_num.png',
                 clipWidth: 25,
                 clipHeight: 32,
                 clipX: 11,
                 space: -8
             };
-            
-            //底分数字初级
-            this.HUD_FONT0 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
-                url: PathGameTongyong.ui_tongyong_dating + 'clip_dizhu0.png',
-                clipWidth: 22,
-                clipHeight: 27,
-                clipX: 10,
-                space: -5
-            };
 
-            //底分数字小资
-            this.HUD_FONT1 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
-                url: PathGameTongyong.ui_tongyong_dating + 'clip_dizhu1.png',
-                clipWidth: 22,
-                clipHeight: 27,
-                clipX: 10,
-                space: -5
-            };
-
-            //底分数字老板
-            this.HUD_FONT2 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
-                url: PathGameTongyong.ui_tongyong_dating + 'clip_dizhu2.png',
-                clipWidth: 22,
-                clipHeight: 27,
-                clipX: 10,
-                space: -5
-            };
-
-            //底分数字富豪
-            this.HUD_FONT3 = {
-                source: PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
-                url: PathGameTongyong.ui_tongyong_dating + 'clip_dizhu3.png',
-                clipWidth: 22,
-                clipHeight: 27,
-                clipX: 10,
-                space: -5
+            //底分准入通用白字
+            this.WHITE_FONT = {
+                source: PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
+                url: PathGameTongyong.ui_tongyong_hud + 'clip_sz.png',
+                clipWidth: 17,
+                clipHeight: 23,
+                clipX: 11,
+                space: -4
             };
         }
         private _clip: ClipCell;
@@ -218,7 +182,7 @@ module gamebenchibaoma {
         private _preSkin: string = null;
         private _postSkin: string = null;
         public setText(str: any, needZero: boolean = false, isTween: boolean = false, preSkin: string = null, postSkin: string = null): void {
-            if (this._num == str && this._needZero == needZero && this._isTween == isTween && this._preSkin == preSkin && this._postSkin == postSkin)  {
+            if (this._num == str && this._needZero == needZero && this._isTween == isTween && this._preSkin == preSkin && this._postSkin == postSkin) {
                 return;
             }
             this._num = str;
@@ -274,7 +238,7 @@ module gamebenchibaoma {
                 for (let i = 0; i < len; i++) {
                     let clip = this._clipArray[i];
                     let indexStr: string = this._txtStr.charAt(i).toString();
-                    let index = (indexStr == ".") ? 10 : parseInt(indexStr);
+                    let index = (indexStr == "-") ? 11 : (indexStr == ".") ? 10 : parseInt(indexStr);
                     if (!clip) {
                         clip = this.createClip(index);
                         this._container.addChild(clip);
