@@ -81,6 +81,7 @@ module gamebenchibaoma.page {
 
         private _curChip: number;//当前选择筹码
         private _curChipY: number;//当前选择筹码y轴位置
+        private _btnRepeatY: number;//重复下注位置
         private _chipUIList: Array<ui.ajqp.game_ui.tongyong.effect.Effect_cmUI> = [];//筹码UI集合
         private _chipArr: Array<number> = [];//筹码大小类型
         private _chipSortScore: number = 0;//筹码层级
@@ -178,7 +179,7 @@ module gamebenchibaoma.page {
                 this._allMainBet[i] = 0;
                 this._rebetList[i] = 0;
             }
-
+            this._btnRepeatY = this._viewUI.btn_repeat.y;
             this._areaList = [];
             this._areaKuangUIList = [];
             this._allMainBetUI = [];
@@ -249,7 +250,6 @@ module gamebenchibaoma.page {
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_ACTION, this, this.onUpdateUnit);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_MAPINFO_CHANGE, this, this.onUpdateMapInfo);
             this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_UNIT_QIFU_TIME_CHANGE, this, this.onUpdateUnit);
-            this._game.sceneObjectMgr.on(SceneObjectMgr.EVENT_MAIN_UNIT_CHANGE, this, this.onUpdateChipGrey);
 
             this._game.qifuMgr.on(QiFuMgr.QIFU_FLY, this, this.qifuFly);
 
@@ -486,12 +486,14 @@ module gamebenchibaoma.page {
 
         //筹码是否置灰（是否下注阶段）
         private onChipDisabled(isBetState: boolean): void {
-            this.onUpdateChipGrey();
             this._viewUI.btn_repeat.disabled = !isBetState;
             if (isBetState) {
+                Laya.Tween.to(this._viewUI.btn_repeat, { y: this._btnRepeatY }, 300);
                 let index = this._chipArr.indexOf(this._curChip);
                 for (let i: number = 0; i < this._chipUIList.length; i++) {
-                    Laya.Tween.to(this._chipUIList[i], { y: i == index ? this._curChipY - 10 : this._curChipY }, 300);
+                    Laya.Tween.to(this._chipUIList[i], { y: i == index ? this._curChipY - 10 : this._curChipY }, 300, null, Handler.create(this, () => {
+                        this._isTweenOver = true;
+                    }));
                     this._chipUIList[i].img0.visible = this._chipUIList[i].img1.visible = i == index;
                     !this._chipUIList[i].disabled && (this._chipUIList[i].mouseEnabled = true);
                     this._chipUIList[i].alpha = 1;
@@ -502,6 +504,7 @@ module gamebenchibaoma.page {
                     }
                 }
             } else {
+                Laya.Tween.to(this._viewUI.btn_repeat, { y: this._btnRepeatY + 20 }, 300);
                 for (let i: number = 0; i < this._chipUIList.length; i++) {
                     Laya.Tween.to(this._chipUIList[i], { y: this._curChipY + 20 }, 300);
                     !this._chipUIList[i].disabled && (this._chipUIList[i].mouseEnabled = false);
@@ -512,15 +515,28 @@ module gamebenchibaoma.page {
             }
         }
 
+        private _isTweenOver: boolean = false;
         private onUpdateChipGrey() {
             if (!this._game.sceneObjectMgr.mainUnit) return;
             let money: number = this._game.sceneObjectMgr.mainUnit.GetMoney();
+            let curMaxChipIndex: number = -1;
             for (let i = 0; i < this._chipUIList.length; i++) {
                 let index = this._chipUIList.length - 1 - i;
+                let chipUI = this._chipUIList[index];
                 if (money < this._chipArr[index]) {
-                    this._chipUIList[index].disabled = true;
+                    chipUI.disabled = true;
                 } else {
-                    this._chipUIList[index].disabled = false;
+                    if (curMaxChipIndex == -1) {
+                        curMaxChipIndex = index;
+                    }
+                    chipUI.disabled = false;
+                }
+            }
+            //如果因为钱不够导致当前选中筹码被置灰，则向下调整选中筹码
+            let curChipIndex = this._chipArr.indexOf(this._curChip);
+            if (curChipIndex > curMaxChipIndex && this._isTweenOver) {
+                if (this._curStatus == MAP_STATUS.PLAY_STATUS_BET) {
+                    this.onSelectChip(curMaxChipIndex);
                 }
             }
         }
@@ -607,18 +623,22 @@ module gamebenchibaoma.page {
                     this._viewUI.main_player.qifu_type.skin = this._qifuTypeImgUrl;
                     this.playTween(this._viewUI.main_player.qifu_type, qifu_index);
                 }
-                //时间戳变化 才加上祈福标志
-                if (TongyongUtil.getIsHaveQiFu(mainUnit, this._game.sync.serverTimeBys)) {
-                    if (qifu_index && mainIdx == qifu_index) {
-                        Laya.timer.once(2500, this, () => {
-                            this._viewUI.main_player.img_qifu.visible = true;
-                            this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
-                        })
-                    }
-                } else {
-                    this._viewUI.main_player.img_qifu.visible = false;
+                //祈福成功 头像上就有动画
+                if (qifu_index && mainIdx == qifu_index) {
+                    this._viewUI.main_player.qifu_type.visible = true;
+                    this._viewUI.main_player.qifu_type.skin = this._qifuTypeImgUrl;
+                    //时间戳变化 才加上祈福标志
+                    this.playTween(this._viewUI.main_player.qifu_type, qifu_index);
+                    Laya.timer.once(2500, this, () => {
+                        this._viewUI.main_player.img_qifu.visible = true;
+                        this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
+                    })
+                }
+                else {
+                    this._viewUI.main_player.img_qifu.visible = TongyongUtil.getIsHaveQiFu(mainUnit, this._game.sync.serverTimeBys);
                     this._viewUI.main_player.img_icon.skin = TongyongUtil.getHeadUrl(mainUnit.GetHeadImg(), 2);
                 }
+                this.onUpdateChipGrey();
             }
             let onlineNum = 0;
             for (let key in this._game.sceneObjectMgr.unitDic) {
@@ -787,6 +807,7 @@ module gamebenchibaoma.page {
                 this.onUpdateRecord();
                 this.onUpdateCountDown();
                 this.onUpdateUnit();
+                this.onUpdateChipGrey();
             }
         }
 
@@ -978,9 +999,6 @@ module gamebenchibaoma.page {
             let mapStatus = this._bcbmMapInfo.GetMapState();
             if (this._curStatus == mapStatus) return;
             this._curStatus = mapStatus;
-            if (this._game.uiRoot.HUD.isOpened(BenchibaomaPageDef.PAGE_BCBM_TONGSHA) && this._curStatus >= MAP_STATUS.PLAY_STATUS_WASH_CARD) {
-                this._pageHandle.pushClose({ id: BenchibaomaPageDef.PAGE_BCBM_TONGSHA, parent: this._game.uiRoot.HUD });
-            }
             this.onChipDisabled(this._curStatus == MAP_STATUS.PLAY_STATUS_BET);
             this._viewUI.box_tip.visible = false;
             this._viewUI.txt_status.visible = false;
@@ -1319,7 +1337,6 @@ module gamebenchibaoma.page {
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_UNIT_ACTION, this, this.onUpdateUnit);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_MAPINFO_CHANGE, this, this.onUpdateMapInfo);
                 this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_UNIT_QIFU_TIME_CHANGE, this, this.onUpdateUnit);
-                this._game.sceneObjectMgr.off(SceneObjectMgr.EVENT_MAIN_UNIT_CHANGE, this, this.onUpdateChipGrey);
 
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_STATUS_CHECK, this, this.onUpdateStatus);
                 this._game.sceneObjectMgr.off(BenchibaomaMapInfo.EVENT_BATTLE_CHECK, this, this.onUpdateBattle);

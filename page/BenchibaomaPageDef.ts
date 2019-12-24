@@ -10,10 +10,6 @@ module gamebenchibaoma.page {
 		static PAGE_BCBM_MAP: string = "2";
 		//奔驰宝马开始下注界面
 		static PAGE_BCBM_BEGIN: string = "3";
-		//奔驰宝马游戏通杀界面
-		static PAGE_BCBM_TONGSHA: string = "4";
-		//奔驰宝马游戏通赔界面
-		static PAGE_BCBM_TONGPEI: string = "5";
 		//奔驰宝马停止下注界面
 		static PAGE_BCBM_END: string = "6";
 		//奔驰宝马游戏规则界面
@@ -26,8 +22,6 @@ module gamebenchibaoma.page {
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM] = BcbmPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_MAP] = BcbmMapPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_BEGIN] = BcbmBeginPage;
-			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_TONGSHA] = BcbmTongShaPage;
-			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_TONGPEI] = BcbmTongPeiPage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_RULE] = BcbmRulePage;
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_END] = BcbmEndPage;
 
