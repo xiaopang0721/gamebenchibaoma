@@ -7,7 +7,7 @@ module gamebenchibaoma.page {
 		private _player: any;
 		private _xianhongTemp: any = [5000, 8000, 25000, 50000];
 		private _needMoney: any = [0, 0, 0, 0];
-		private _xianhongClipList: ClipUtil[] = [];
+		private _xianhongClipList: BenchibaomaClip[] = [];
 
 		constructor(v: Game, onOpenFunc?: Function, onCloseFunc?: Function) {
 			super(v, onOpenFunc, onCloseFunc);
@@ -35,7 +35,7 @@ module gamebenchibaoma.page {
 			}
 			for (let index = 0; index < 4; index++) {
 				if (!this._xianhongClipList[index]) {
-					this._xianhongClipList[index] = new ClipUtil(BenchibaomaClip.WHITE_FONT);
+					this._xianhongClipList[index] = new BenchibaomaClip(BenchibaomaClip.WHITE_FONT);
 					this._xianhongClipList[index].centerX = this._viewUI["txt_xianhong" + index].centerX;
 					this._xianhongClipList[index].centerY = this._viewUI["txt_xianhong" + index].centerY;
 					this._viewUI["txt_xianhong" + index].parent && this._viewUI["txt_xianhong" + index].parent.addChild(this._xianhongClipList[index]);
@@ -54,13 +54,15 @@ module gamebenchibaoma.page {
 				this._viewUI.box_right._childs[index].visible = true;
 				Laya.Tween.from(this._viewUI.box_right._childs[index], {
 					x: 1280
-				}, 200 + index * 100, Laya.Ease.linearNone);
+				}, 200 + index * 100, Laya.Ease.linearNone, Handler.create(this, () => {
+					this._viewUI.box_right._childs[index].on(LEvent.CLICK, this, this.onBtnClickWithTween);
+				}));
 			}
 
-			this._viewUI.img_room0.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.img_room1.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.img_room2.on(LEvent.CLICK, this, this.onBtnClickWithTween);
-			this._viewUI.img_room3.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.img_room0.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.img_room1.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.img_room2.on(LEvent.CLICK, this, this.onBtnClickWithTween);
+			// this._viewUI.img_room3.on(LEvent.CLICK, this, this.onBtnClickWithTween);
 		}
 
 		protected onBtnTweenEnd(e: LEvent, target: any): void {
