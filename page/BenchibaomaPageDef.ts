@@ -41,7 +41,6 @@ module gamebenchibaoma.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "js.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong_general_effect + "anniug.atlas",
-                PathGameTongyong.atlas_game_ui_tongyong_general_effect + "suiji.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksyx.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong_general_effect + "ksxz.atlas",
 
