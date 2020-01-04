@@ -139,6 +139,7 @@ module gamebenchibaoma.page {
                 PathGameTongyong.atlas_game_ui_tongyong + "touxiang.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "chongzhi.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "nyl.atlas",
+                PathGameTongyong.atlas_game_ui_tongyong + "yq.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "js.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong_general + "anniu.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong_general_effect + "suiji.atlas",
