@@ -26,11 +26,10 @@ module gamebenchibaoma.page {
 			PageDef._pageClassMap[BenchibaomaPageDef.PAGE_BCBM_END] = BcbmEndPage;
 
 			this["__needLoadAsset"] = [
-				DatingPath.atlas_dating_ui + "qifu.atlas",
-				PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
                 Path_game_benchibaoma.atlas_game_ui + "benchibaoma.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "hud.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + "pai.atlas",
+				PathGameTongyong.atlas_game_ui_tongyong + "qifu.atlas",
 				PathGameTongyong.atlas_game_ui_tongyong + "logo.atlas",
                 PathGameTongyong.atlas_game_ui_tongyong + 'dating.atlas',
                 PathGameTongyong.atlas_game_ui_tongyong + "general.atlas",
